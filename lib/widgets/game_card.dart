@@ -10,7 +10,7 @@ class GameCard extends StatelessWidget {
   Color getStatusColor(String status) {
     switch (status) {
       case 'Planejo Jogar':
-        return Colors.purple;
+        return Colors.grey;
       case 'Jogando':
         return Colors.blue;
       case 'Pausado':
@@ -20,7 +20,7 @@ class GameCard extends StatelessWidget {
       case 'Abandonado':
         return Colors.red;
       default:
-        return Colors.grey;
+        return Colors.white;
     }
   }
 
