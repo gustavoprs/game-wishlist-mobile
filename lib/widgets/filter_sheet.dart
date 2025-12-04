@@ -102,6 +102,7 @@ class _FilterSheetState extends State<FilterSheet> {
     return SafeArea(
       left: false,
       right: false,
+      bottom: false,
       child: Padding(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
