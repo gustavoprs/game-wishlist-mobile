@@ -24,7 +24,7 @@ class _MyHomePageState extends State<MyHomePage> {
       tags: ['RPG', 'Soulslike', 'Open World'],
       publishedAt: DateTime(2022, 2, 25),
       status: 'Planejo Jogar',
-      platforms: ['pc', 'ps5', 'xbox'],
+      platforms: ['pc', 'ps5', 'xbox series'],
     ),
     Game(
       title: 'Hades',
@@ -33,7 +33,24 @@ class _MyHomePageState extends State<MyHomePage> {
       tags: ['Roguelike de Ação', 'Roguelike', 'Hack and Slash', 'Indie'],
       publishedAt: DateTime(2020, 9, 17),
       status: 'Jogado',
-      platforms: ['pc', 'ps5', 'xbox'],
+      platforms: ['pc', 'ps5', 'xbox series'],
+    ),
+    Game(
+      title: 'Metro: Exodus',
+      imageUrl: 'https://i.ytimg.com/vi/uoBF-7x69wY/maxresdefault.jpg',
+      tags: ['FPS', 'Open World'],
+      publishedAt: DateTime(2019, 2, 14),
+      status: 'Planejo Jogar',
+      platforms: ['pc', 'ps5', 'ps4', 'xbox series'],
+    ),
+    Game(
+      title: 'The Walking Dead: The Telltale Definitive Series',
+      imageUrl:
+          'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1449690/a9ccc64b359746f3905e760a73dcff3e2b6ec052/capsule_616x353.jpg?t=1760651835',
+      tags: ['Escolhas importam', 'Ficção Interativa', 'Horror'],
+      publishedAt: DateTime(2020, 10, 29),
+      status: 'Jogando',
+      platforms: ['pc', 'ps5', 'ps4', 'xbox series'],
     ),
   ];
 

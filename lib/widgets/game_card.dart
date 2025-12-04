@@ -261,16 +261,18 @@ class GameCard extends StatelessWidget {
               ),
               Positioned(
                 left: 12,
-                right: 12,
                 bottom: 8,
-                child: Text(
-                  game.title,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    shadows: [Shadow(color: Colors.black, blurRadius: 6)],
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 300),
+                  child: Text(
+                    game.title,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      shadows: [Shadow(color: Colors.black, blurRadius: 6)],
+                    ),
                   ),
                 ),
               ),
