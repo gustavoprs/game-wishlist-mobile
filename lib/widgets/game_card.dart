@@ -6,8 +6,14 @@ import 'package:guaxilist/models/game_status.dart';
 class GameCard extends StatelessWidget {
   final Game game;
   final void Function(GameStatus newStatus)? onStatusChange;
+  final void Function()? onDelete;
 
-  const GameCard({super.key, required this.game, this.onStatusChange});
+  const GameCard({
+    super.key,
+    required this.game,
+    this.onStatusChange,
+    this.onDelete,
+  });
 
   void _openSheet(BuildContext context) {
     showModalBottomSheet(
@@ -106,7 +112,53 @@ class GameCard extends StatelessWidget {
                           ListTile(
                             leading: Icon(Icons.delete_outline),
                             title: Text('Excluir'),
-                            onTap: () {},
+                            onTap: () async {
+                              final sheetNavigator = Navigator.of(ctx);
+
+                              final bool? delete = await showDialog<bool>(
+                                context: ctx,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Confirmar exclusão"),
+                                    content: Text(
+                                      "Você tem certeza que deseja excluir esse registro? Essa ação não pode ser desfeita.",
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(false),
+                                        child: Text("Cancelar"),
+                                      ),
+                                      TextButton(
+                                        style: ButtonStyle(
+                                          backgroundColor:
+                                              WidgetStateProperty.all(
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.error,
+                                              ),
+                                        ),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(true),
+                                        child: Text(
+                                          "Apagar",
+                                          style: TextStyle(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onError,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+
+                              if (delete == true) {
+                                onDelete?.call();
+                                sheetNavigator.pop();
+                              }
+                            },
                           ),
                         ],
                       ),

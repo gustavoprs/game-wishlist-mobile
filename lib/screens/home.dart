@@ -186,6 +186,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _deleteGame(Game game) {
+    setState(() {
+      games.removeWhere((g) => g.id == game.id);
+      _applyFilter();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -282,6 +289,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onStatusChange: (newStatus) {
                       _updateGameStatus(filteredGames[index], newStatus);
                     },
+                    onDelete: () => _deleteGame(filteredGames[index]),
                   );
                 },
               ),
