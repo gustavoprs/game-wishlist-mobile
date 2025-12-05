@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:guaxilist/models/game_status.dart';
 
 typedef FilterChanged = void Function(FilterResult result);
 
 class FilterResult {
-  final Set<String> statuses;
+  final Set<GameStatus> statuses;
   final Set<String> tags;
   final Set<String> platforms;
 
@@ -15,11 +16,11 @@ class FilterResult {
 }
 
 class FilterSheet extends StatefulWidget {
-  final Set<String> initialStatuses;
+  final Set<GameStatus> initialStatuses;
   final Set<String> initialTags;
   final Set<String> initialPlatforms;
 
-  final List<String> possibleStatuses;
+  final List<GameStatus> possibleStatuses;
   final List<String> possibleTags;
   final List<String> possiblePlatforms;
 
@@ -41,7 +42,7 @@ class FilterSheet extends StatefulWidget {
 }
 
 class _FilterSheetState extends State<FilterSheet> {
-  late Set<String> selectedStatuses;
+  late Set<GameStatus> selectedStatuses;
   late Set<String> selectedTags;
   late Set<String> selectedPlatforms;
 
@@ -161,7 +162,7 @@ class _FilterSheetState extends State<FilterSheet> {
                             children: statuses.map((s) {
                               final selected = selectedStatuses.contains(s);
                               return FilterChip(
-                                label: Text(s),
+                                label: Text(s.displayName()),
                                 selected: selected,
                                 onSelected: (_) => _toggle(selectedStatuses, s),
                                 selectedColor: theme.colorScheme.primary

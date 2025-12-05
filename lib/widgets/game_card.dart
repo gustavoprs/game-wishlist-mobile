@@ -1,28 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'package:guaxilist/models/game.dart';
+import 'package:guaxilist/models/game_status.dart';
 
 class GameCard extends StatelessWidget {
   final Game game;
+  final void Function(GameStatus newStatus)? onStatusChange;
 
-  const GameCard({super.key, required this.game});
-
-  Color getStatusColor(String status) {
-    switch (status) {
-      case 'Planejo Jogar':
-        return Colors.grey;
-      case 'Jogando':
-        return Colors.blue;
-      case 'Pausado':
-        return Colors.yellow;
-      case 'Jogado':
-        return Colors.green;
-      case 'Abandonado':
-        return Colors.red;
-      default:
-        return Colors.white;
-    }
-  }
+  const GameCard({super.key, required this.game, this.onStatusChange});
 
   void _openSheet(BuildContext context) {
     showModalBottomSheet(
@@ -33,6 +18,7 @@ class GameCard extends StatelessWidget {
         final maxHeight = MediaQuery.of(ctx).size.height * 0.8;
 
         return SafeArea(
+          bottom: false,
           child: Padding(
             padding: EdgeInsets.only(
               left: 0,
@@ -79,11 +65,11 @@ class GameCard extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: getStatusColor(game.status),
+                            color: game.status.color,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            game.status,
+                            game.status.displayName(),
                             style: TextStyle(fontSize: 12, color: Colors.white),
                           ),
                         ),
@@ -136,15 +122,7 @@ class GameCard extends StatelessWidget {
   }
 
   void _selectStatus(BuildContext context) {
-    final statuses = [
-      "Planejo Jogar",
-      "Jogando",
-      "Pausado",
-      "Jogado",
-      "Abandonado",
-    ];
-
-    String selectedStatus = game.status;
+    final navigator = Navigator.of(context);
 
     showModalBottomSheet(
       context: context,
@@ -183,19 +161,19 @@ class GameCard extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 8),
-              RadioGroup(
-                groupValue: selectedStatus,
+              RadioGroup<GameStatus>(
+                groupValue: game.status,
                 onChanged: (value) {
                   Navigator.of(ctx).pop(value);
                 },
                 child: Column(
                   children: [
-                    ...statuses.map((status) {
-                      final color = getStatusColor(status);
+                    ...GameStatus.values.map((status) {
+                      final color = status.color;
 
-                      return RadioListTile<String>(
+                      return RadioListTile<GameStatus>(
                         value: status,
-                        title: Text(status),
+                        title: Text(status.displayName()),
                         activeColor: color,
                         // fillColor: WidgetStateColor.resolveWith((states) => color),
                       );
@@ -211,8 +189,9 @@ class GameCard extends StatelessWidget {
       },
     ).then((selectedStatus) {
       if (selectedStatus != null) {
-        // TODO: aplicar o novo status no game
-        print("Novo status selecionado: $selectedStatus");
+        onStatusChange?.call(selectedStatus as GameStatus);
+
+        navigator.pop();
       }
     });
   }
@@ -282,7 +261,7 @@ class GameCard extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: getStatusColor(game.status),
+                    color: game.status.color,
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 
 import 'package:guaxilist/models/game.dart';
+import 'package:guaxilist/models/game_status.dart';
 import 'package:guaxilist/widgets/filter_sheet.dart';
 import 'package:guaxilist/widgets/game_card.dart';
 
@@ -18,49 +19,53 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Game> games = [
     Game(
+      id: "1",
       title: 'Elden Ring',
       imageUrl:
           'https://static0.srcdn.com/wordpress/wp-content/uploads/2022/12/elden-ring-cover.jpg',
       tags: ['RPG', 'Soulslike', 'Open World'],
       publishedAt: DateTime(2022, 2, 25),
-      status: 'Planejo Jogar',
+      status: GameStatus.planToPlay,
       platforms: ['pc', 'ps5', 'xbox series'],
     ),
     Game(
+      id: "2",
       title: 'Hades',
       imageUrl:
           'https://cdn1.epicgames.com/min/offer/2560x1440-2560x1440-5e710b93049cbd2125cf0261dcfbf943.jpg',
       tags: ['Roguelike de Ação', 'Roguelike', 'Hack and Slash', 'Indie'],
       publishedAt: DateTime(2020, 9, 17),
-      status: 'Jogado',
+      status: GameStatus.finished,
       platforms: ['pc', 'ps5', 'xbox series'],
     ),
     Game(
+      id: "3",
       title: 'Metro: Exodus',
       imageUrl: 'https://i.ytimg.com/vi/uoBF-7x69wY/maxresdefault.jpg',
       tags: ['FPS', 'Open World'],
       publishedAt: DateTime(2019, 2, 14),
-      status: 'Planejo Jogar',
+      status: GameStatus.planToPlay,
       platforms: ['pc', 'ps5', 'ps4', 'xbox series'],
     ),
     Game(
+      id: "3",
       title: 'The Walking Dead: The Telltale Definitive Series',
       imageUrl:
           'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1449690/a9ccc64b359746f3905e760a73dcff3e2b6ec052/capsule_616x353.jpg?t=1760651835',
       tags: ['Escolhas importam', 'Ficção Interativa', 'Horror'],
       publishedAt: DateTime(2020, 10, 29),
-      status: 'Jogando',
+      status: GameStatus.playing,
       platforms: ['pc', 'ps5', 'ps4', 'xbox series'],
     ),
   ];
 
   List<Game> filteredGames = [];
 
-  List<String> allStatuses = [];
+  List<GameStatus> allStatuses = [];
   List<String> allTags = [];
   List<String> allPlatforms = [];
 
-  Set<String> selectedStatuses = {};
+  Set<GameStatus> selectedStatuses = {};
   Set<String> selectedTags = {};
   Set<String> selectedPlatforms = {};
 
@@ -70,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
     filteredGames = List.from(games);
     _searchController.addListener(_applyFilter);
 
-    final statuses = <String>{};
+    final statuses = <GameStatus>{};
     final tags = <String>{};
     final platforms = <String>{};
 
@@ -161,6 +166,24 @@ class _MyHomePageState extends State<MyHomePage> {
       duration: Duration(milliseconds: 400),
       curve: Curves.easeInOut,
     );
+  }
+
+  void _updateGameStatus(Game game, GameStatus newStatus) {
+    final index = games.indexWhere((g) => g.id == game.id);
+
+    if (index == -1) {
+      return;
+    }
+
+    setState(() {
+      games[index] = games[index].copyWith(status: newStatus);
+
+      if (!allStatuses.contains(newStatus)) {
+        allStatuses.add(newStatus);
+      }
+
+      _applyFilter();
+    });
   }
 
   @override
@@ -254,7 +277,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                   }
 
-                  return GameCard(game: filteredGames[index]);
+                  return GameCard(
+                    game: filteredGames[index],
+                    onStatusChange: (newStatus) {
+                      _updateGameStatus(filteredGames[index], newStatus);
+                    },
+                  );
                 },
               ),
             ),
