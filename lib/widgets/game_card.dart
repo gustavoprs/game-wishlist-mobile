@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 
 import 'package:guaxilist/models/game.dart';
 import 'package:guaxilist/models/game_status.dart';
+import 'package:guaxilist/screens/edit_game.dart';
 
 class GameCard extends StatelessWidget {
   final Game game;
   final void Function(GameStatus newStatus)? onStatusChange;
+  final void Function(Game updatedGame)? onUpdate;
   final void Function()? onDelete;
 
   const GameCard({
     super.key,
     required this.game,
     this.onStatusChange,
+    this.onUpdate,
     this.onDelete,
   });
 
@@ -107,7 +110,19 @@ class GameCard extends StatelessWidget {
                           ListTile(
                             leading: Icon(Icons.edit),
                             title: Text('Editar'),
-                            onTap: () {},
+                            onTap: () async {
+                              Navigator.of(context).pop();
+                              final updatedGame = await Navigator.of(context)
+                                  .push<Game>(
+                                    MaterialPageRoute(
+                                      builder: (_) => EditGamePage(game: game),
+                                    ),
+                                  );
+
+                              if (updatedGame != null) {
+                                onUpdate?.call(updatedGame);
+                              }
+                            },
                           ),
                           ListTile(
                             leading: Icon(Icons.delete_outline),
@@ -268,12 +283,16 @@ class GameCard extends StatelessWidget {
                     return Center(child: CircularProgressIndicator());
                   },
                   errorBuilder: (context, error, stackTrace) => Container(
-                    color: Colors.grey[200],
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
                     child: Center(
                       child: Icon(
                         Icons.broken_image,
                         size: 60,
-                        color: Colors.grey[300],
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                       ),
                     ),
                   ),

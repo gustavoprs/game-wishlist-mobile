@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
       platforms: ['pc', 'ps5', 'ps4', 'xbox series'],
     ),
     Game(
-      id: "3",
+      id: "4",
       title: 'The Walking Dead: The Telltale Definitive Series',
       imageUrl:
           'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1449690/a9ccc64b359746f3905e760a73dcff3e2b6ec052/capsule_616x353.jpg?t=1760651835',
@@ -186,6 +186,16 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _updateGame(Game updated) {
+    setState(() {
+      final i1 = games.indexWhere((g) => g.id == updated.id);
+      if (i1 != -1) games[i1] = updated;
+
+      final i2 = filteredGames.indexWhere((g) => g.id == updated.id);
+      if (i2 != -1) filteredGames[i2] = updated;
+    });
+  }
+
   void _deleteGame(Game game) {
     setState(() {
       games.removeWhere((g) => g.id == game.id);
@@ -289,6 +299,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onStatusChange: (newStatus) {
                       _updateGameStatus(filteredGames[index], newStatus);
                     },
+                    onUpdate: (game) => _updateGame(game),
                     onDelete: () => _deleteGame(filteredGames[index]),
                   );
                 },
