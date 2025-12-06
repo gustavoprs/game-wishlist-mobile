@@ -31,9 +31,9 @@ class Game {
     return Game(
       id: this.id,
       title: title ?? this.title,
-      imageUrl: imageUrl ?? this.imageUrl,
+      imageUrl: imageUrl,
       tags: tags ?? this.tags,
-      publishedAt: publishedAt ?? this.publishedAt,
+      publishedAt: publishedAt,
       status: status ?? this.status,
       platforms: platforms ?? this.platforms,
     );
