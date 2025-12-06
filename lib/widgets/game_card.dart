@@ -274,29 +274,44 @@ class GameCard extends StatelessWidget {
           child: Stack(
             children: [
               Positioned.fill(
-                child: Image.network(
-                  game.imageUrl,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
+                child: game.imageUrl != null && game.imageUrl!.isNotEmpty
+                    ? Image.network(
+                        game.imageUrl!,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
 
-                    return Center(child: CircularProgressIndicator());
-                  },
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainerHighest,
-                    child: Center(
-                      child: Icon(
-                        Icons.broken_image,
-                        size: 60,
+                          return Center(child: CircularProgressIndicator());
+                        },
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHigh,
+                          child: Center(
+                            child: Icon(
+                              Icons.broken_image,
+                              size: 60,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      )
+                    : Container(
                         color: Theme.of(
                           context,
-                        ).colorScheme.surfaceContainerHighest,
+                        ).colorScheme.surfaceContainerHigh,
+                        child: Center(
+                          child: Icon(
+                            Icons.image,
+                            size: 60,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceTint,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
               ),
               Positioned.fill(
                 child: Container(

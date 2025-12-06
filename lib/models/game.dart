@@ -3,18 +3,18 @@ import 'package:guaxilist/models/game_status.dart';
 class Game {
   final String id;
   final String title;
-  final String imageUrl;
+  final String? imageUrl;
   final List<String> tags;
-  final DateTime publishedAt;
+  final DateTime? publishedAt;
   final GameStatus status;
   final List<String> platforms;
 
   Game({
     required this.id,
     required this.title,
-    required this.imageUrl,
+    this.imageUrl,
     required this.tags,
-    required this.publishedAt,
+    this.publishedAt,
     required this.status,
     required this.platforms,
   });

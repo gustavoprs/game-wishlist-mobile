@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:guaxilist/models/game.dart';
 import 'package:guaxilist/models/game_status.dart';
+import 'package:guaxilist/screens/add_game.dart';
 import 'package:guaxilist/widgets/filter_sheet.dart';
 import 'package:guaxilist/widgets/game_card.dart';
 
@@ -168,6 +169,13 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void _addGame(Game game) {
+    setState(() {
+      games.add(game);
+      _applyFilter();
+    });
+  }
+
   void _updateGameStatus(Game game, GameStatus newStatus) {
     final index = games.indexWhere((g) => g.id == game.id);
 
@@ -310,7 +318,15 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).colorScheme.primary,
-        onPressed: () => {},
+        onPressed: () async {
+          final newGame = await Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => AddGame()));
+
+          if (newGame != null) {
+            _addGame(newGame);
+          }
+        },
         child: Icon(
           Icons.add,
           color: Theme.of(context).colorScheme.inversePrimary,

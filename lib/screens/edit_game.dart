@@ -17,7 +17,7 @@ class _EditGamePageState extends State<EditGamePage> {
   late TextEditingController newTagController;
   late TextEditingController newPlatformController;
 
-  late DateTime publishedAt;
+  late DateTime? publishedAt;
 
   List<String> tags = [];
   List<String> platforms = [];
@@ -250,7 +250,9 @@ class _EditGamePageState extends State<EditGamePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "${publishedAt.day}/${publishedAt.month}/${publishedAt.year}",
+                          publishedAt != null
+                              ? "${publishedAt!.day}/${publishedAt!.month}/${publishedAt!.year}"
+                              : "Selecione uma data",
                         ),
                         Icon(Icons.calendar_today),
                       ],
