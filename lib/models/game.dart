@@ -42,4 +42,43 @@ class Game {
       platforms: platforms ?? this.platforms,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'image_url': imageUrl,
+      'tags': tags.join(','),
+      'published_at': publishedAt?.toIso8601String(),
+      'status': status.name,
+      'platforms': platforms.join(','),
+    };
+  }
+
+  factory Game.fromMap(Map<String, dynamic> map) {
+    return Game(
+      id: map['id'] as String,
+      title: map['title'] as String,
+      imageUrl: map['image_url'] as String?,
+      tags:
+          (map['tags'] as String?)
+              ?.split(',')
+              .where((t) => t.isNotEmpty)
+              .toList() ??
+          [],
+      publishedAt: map['published_at'] != null
+          ? DateTime.parse(map['published_at'] as String)
+          : null,
+      status: GameStatus.values.firstWhere(
+        (s) => s.name == map['status'],
+        orElse: () => GameStatus.planToPlay,
+      ),
+      platforms:
+          (map['platforms'] as String?)
+              ?.split(',')
+              .where((p) => p.isNotEmpty)
+              .toList() ??
+          [],
+    );
+  }
 }

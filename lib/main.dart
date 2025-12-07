@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:guaxilist/data/repositories/game_repository.dart';
+import 'package:guaxilist/data/repositories/sqlite_game_repository.dart';
 import 'package:guaxilist/screens/home.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  final GameRepository gameRepository = SqliteGameRepository();
+
+  runApp(MyApp(gameRepository: gameRepository));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final GameRepository gameRepository;
+
+  const MyApp({super.key, required this.gameRepository});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'GuaxiList',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      routes: {'/': (context) => const MyHomePage()},
+      routes: {'/': (context) => MyHomePage(gameRepository: gameRepository)},
     );
   }
 }

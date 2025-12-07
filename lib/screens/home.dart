@@ -6,9 +6,12 @@ import 'package:guaxilist/models/game_status.dart';
 import 'package:guaxilist/screens/add_game.dart';
 import 'package:guaxilist/widgets/filter_sheet.dart';
 import 'package:guaxilist/widgets/game_card.dart';
+import 'package:guaxilist/data/repositories/game_repository.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  final GameRepository gameRepository;
+
+  const MyHomePage({super.key, required this.gameRepository});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -18,47 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  final List<Game> games = [
-    Game(
-      id: "1",
-      title: 'Elden Ring',
-      imageUrl:
-          'https://static0.srcdn.com/wordpress/wp-content/uploads/2022/12/elden-ring-cover.jpg',
-      tags: ['RPG', 'Soulslike', 'Open World'],
-      publishedAt: DateTime(2022, 2, 25),
-      status: GameStatus.planToPlay,
-      platforms: ['pc', 'ps5', 'xbox series'],
-    ),
-    Game(
-      id: "2",
-      title: 'Hades',
-      imageUrl:
-          'https://cdn1.epicgames.com/min/offer/2560x1440-2560x1440-5e710b93049cbd2125cf0261dcfbf943.jpg',
-      tags: ['Roguelike de Ação', 'Roguelike', 'Hack and Slash', 'Indie'],
-      publishedAt: DateTime(2020, 9, 17),
-      status: GameStatus.finished,
-      platforms: ['pc', 'ps5', 'xbox series'],
-    ),
-    Game(
-      id: "3",
-      title: 'Metro: Exodus',
-      imageUrl: 'https://i.ytimg.com/vi/uoBF-7x69wY/maxresdefault.jpg',
-      tags: ['FPS', 'Open World'],
-      publishedAt: DateTime(2019, 2, 14),
-      status: GameStatus.planToPlay,
-      platforms: ['pc', 'ps5', 'ps4', 'xbox series'],
-    ),
-    Game(
-      id: "4",
-      title: 'The Walking Dead: The Telltale Definitive Series',
-      imageUrl:
-          'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1449690/a9ccc64b359746f3905e760a73dcff3e2b6ec052/capsule_616x353.jpg?t=1760651835',
-      tags: ['Escolhas importam', 'Ficção Interativa', 'Horror'],
-      publishedAt: DateTime(2020, 10, 29),
-      status: GameStatus.playing,
-      platforms: ['pc', 'ps5', 'ps4', 'xbox series'],
-    ),
-  ];
+  List<Game> games = [];
 
   List<Game> filteredGames = [];
 
@@ -70,25 +33,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Set<String> selectedTags = {};
   Set<String> selectedPlatforms = {};
 
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
-    filteredGames = List.from(games);
     _searchController.addListener(_applyFilter);
-
-    final statuses = <GameStatus>{};
-    final tags = <String>{};
-    final platforms = <String>{};
-
-    for (final game in games) {
-      statuses.add(game.status);
-      tags.addAll(game.tags);
-      platforms.addAll(game.platforms);
-    }
-
-    allStatuses = statuses.toList();
-    allTags = tags.toList();
-    allPlatforms = platforms.toList();
+    _loadGames();
   }
 
   @override
@@ -97,6 +48,35 @@ class _MyHomePageState extends State<MyHomePage> {
     _searchController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadGames() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final loadedGames = await widget.gameRepository.getAll();
+
+    final statuses = <GameStatus>{};
+    final tags = <String>{};
+    final platforms = <String>{};
+
+    for (final game in loadedGames) {
+      statuses.add(game.status);
+      tags.addAll(game.tags);
+      platforms.addAll(game.platforms);
+    }
+
+    setState(() {
+      games = loadedGames;
+      filteredGames = List.from(loadedGames);
+
+      allStatuses = statuses.toList();
+      allTags = tags.toList();
+      allPlatforms = platforms.toList();
+
+      isLoading = false;
+    });
   }
 
   void _applyFilter() {
@@ -169,32 +149,30 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _addGame(Game game) {
-    setState(() {
-      games.add(game);
-      _applyFilter();
-    });
+  Future<void> _addGame(Game game) async {
+    await widget.gameRepository.insert(game);
+    await _loadGames();
   }
 
-  void _updateGameStatus(Game game, GameStatus newStatus) {
+  Future<void> _updateGameStatus(Game game, GameStatus newStatus) async {
     final index = games.indexWhere((g) => g.id == game.id);
-
     if (index == -1) {
       return;
     }
 
+    final updated = games[index].copyWith(status: newStatus);
+
+    await widget.gameRepository.update(updated);
+
     setState(() {
-      games[index] = games[index].copyWith(status: newStatus);
-
-      if (!allStatuses.contains(newStatus)) {
-        allStatuses.add(newStatus);
-      }
-
+      games[index] = updated;
       _applyFilter();
     });
   }
 
-  void _updateGame(Game updated) {
+  Future<void> _updateGame(Game updated) async {
+    await widget.gameRepository.update(updated);
+
     setState(() {
       final i1 = games.indexWhere((g) => g.id == updated.id);
       if (i1 != -1) games[i1] = updated;
@@ -204,11 +182,9 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _deleteGame(Game game) {
-    setState(() {
-      games.removeWhere((g) => g.id == game.id);
-      _applyFilter();
-    });
+  Future<void> _deleteGame(Game game) async {
+    await widget.gameRepository.delete(game.id);
+    await _loadGames();
   }
 
   @override
@@ -286,32 +262,61 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             Expanded(
-              child: ListView.separated(
-                controller: _scrollController,
-                padding: EdgeInsets.only(bottom: 120),
-                itemCount: filteredGames.length + 1,
-                separatorBuilder: (_, _) => SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  if (index == filteredGames.length) {
-                    return Center(
-                      child: TextButton.icon(
-                        onPressed: _scrollToTop,
-                        icon: Icon(Icons.keyboard_arrow_up),
-                        label: Text("Ir para o topo"),
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : filteredGames.isEmpty
+                  ? Padding(
+                    padding: EdgeInsetsGeometry.symmetric(vertical: 30),
+                    child: Center(
+                        child: Column(
+                          spacing: 4,
+                          children: [
+                            Text(
+                              'Nenhum jogo encontrado.',
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withAlpha(100),
+                              ),
+                            ),
+                            Text(
+                              'Clique no botão abaixo para cadastrar.',
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withAlpha(100),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    );
-                  }
+                  )
+                  : ListView.separated(
+                      controller: _scrollController,
+                      padding: EdgeInsets.only(bottom: 120),
+                      itemCount: filteredGames.length + 1,
+                      separatorBuilder: (_, _) => SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        if (index == filteredGames.length) {
+                          return Center(
+                            child: TextButton.icon(
+                              onPressed: _scrollToTop,
+                              icon: Icon(Icons.keyboard_arrow_up),
+                              label: Text("Ir para o topo"),
+                            ),
+                          );
+                        }
 
-                  return GameCard(
-                    game: filteredGames[index],
-                    onStatusChange: (newStatus) {
-                      _updateGameStatus(filteredGames[index], newStatus);
-                    },
-                    onUpdate: (game) => _updateGame(game),
-                    onDelete: () => _deleteGame(filteredGames[index]),
-                  );
-                },
-              ),
+                        return GameCard(
+                          game: filteredGames[index],
+                          onStatusChange: (newStatus) {
+                            _updateGameStatus(filteredGames[index], newStatus);
+                          },
+                          onUpdate: (game) => _updateGame(game),
+                          onDelete: () => _deleteGame(filteredGames[index]),
+                        );
+                      },
+                    ),
             ),
           ],
         ),
