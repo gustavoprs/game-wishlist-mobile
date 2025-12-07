@@ -1,6 +1,8 @@
 import 'package:guaxilist/models/game_status.dart';
 
 class Game {
+  static const _undefined = Object();
+
   final String id;
   final String title;
   final String? imageUrl;
@@ -22,18 +24,20 @@ class Game {
   Game copyWith({
     String? id,
     String? title,
-    String? imageUrl,
+    Object? imageUrl = _undefined,
     List<String>? tags,
-    DateTime? publishedAt,
+    Object? publishedAt = _undefined,
     GameStatus? status,
     List<String>? platforms,
   }) {
     return Game(
-      id: this.id,
+      id: id ?? this.id,
       title: title ?? this.title,
-      imageUrl: imageUrl,
+      imageUrl: imageUrl == _undefined ? this.imageUrl : imageUrl as String?,
       tags: tags ?? this.tags,
-      publishedAt: publishedAt,
+      publishedAt: publishedAt == _undefined
+          ? this.publishedAt
+          : publishedAt as DateTime?,
       status: status ?? this.status,
       platforms: platforms ?? this.platforms,
     );
