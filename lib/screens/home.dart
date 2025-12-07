@@ -266,8 +266,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   ? Center(child: CircularProgressIndicator())
                   : filteredGames.isEmpty
                   ? Padding(
-                    padding: EdgeInsetsGeometry.symmetric(vertical: 30),
-                    child: Center(
+                      padding: EdgeInsetsGeometry.symmetric(vertical: 30),
+                      child: Center(
                         child: Column(
                           spacing: 4,
                           children: [
@@ -290,7 +290,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ],
                         ),
                       ),
-                  )
+                    )
                   : ListView.separated(
                       controller: _scrollController,
                       padding: EdgeInsets.only(bottom: 120),
@@ -365,16 +365,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-              title: Text("Início"),
-              titleTextStyle: TextStyle(fontSize: 20, color: Colors.black),
-              onTap: () {
-                Navigator.of(
-                  context,
-                ).pushNamedAndRemoveUntil('/', (_) => false);
-              },
             ),
             ListTile(
               title: Text("Sair"),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:guaxilist/data/repositories/game_repository.dart';
 import 'package:guaxilist/data/repositories/sqlite_game_repository.dart';
-import 'package:guaxilist/screens/home.dart';
+import 'package:guaxilist/screens/splash_screen.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   final GameRepository gameRepository = SqliteGameRepository();
 
   runApp(MyApp(gameRepository: gameRepository));
@@ -20,8 +22,9 @@ class MyApp extends StatelessWidget {
       title: 'GuaxiList',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      routes: {'/': (context) => MyHomePage(gameRepository: gameRepository)},
+      home: SplashScreen(gameRepository: gameRepository),
     );
   }
 }
